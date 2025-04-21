@@ -2,8 +2,8 @@ name: Monitor Competidores
 
 on:
   schedule:
-    - cron: '0 8 * * *'      # Todos los días a las 08:00 UTC
-  workflow_dispatch:         # Permite dispararlo manualmente
+    - cron: '0 8 * * *'      # Cada día a las 08:00 UTC
+  workflow_dispatch:
 
 jobs:
   monitor:
@@ -21,9 +21,10 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          # Instalamos todas las dependencias de una vez
+          pip install -r requirements.txt python-dotenv
 
-      - name: Ejecutar monitor_competitors.py
+      - name: Ejecutar monitor
         env:
           NEWSAPI_KEY:       ${{ secrets.NEWSAPI_KEY }}
           OPENAI_API_KEY:    ${{ secrets.OPENAI_API_KEY }}
