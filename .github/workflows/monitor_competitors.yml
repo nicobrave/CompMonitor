@@ -1,19 +1,28 @@
 name: Monitor Competidores
 
+# Necesario para que GITHUB_TOKEN pueda hacer git push
+permissions:
+  contents: write
+
 on:
   schedule:
-    - cron: '0 8 * * *'      # Cada día a las 08:00 UTC
-  workflow_dispatch:         # Permite dispararlo manualmente
+    - cron: '0 8 * * *'
+  workflow_dispatch:
 
 jobs:
   monitor:
     runs-on: ubuntu-latest
 
+    # Aseguramos también a nivel de job
+    permissions:
+      contents: write
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0     # traer todo el historial para poder push
+          fetch-depth: 0
+          persist-credentials: true   # <- importante para dejar el GITHUB_TOKEN en .git/config
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -33,6 +42,7 @@ jobs:
         run: python monitor.py
 
       - name: Commit state.json updates
+        # GITHUB_TOKEN ya está disponible en el runner
         run: |
           git config user.name 'github-actions'
           git config user.email 'actions@github.com'
