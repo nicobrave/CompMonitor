@@ -3,7 +3,7 @@ name: Monitor Competidores
 on:
   schedule:
     - cron: '0 8 * * *'      # Cada día a las 08:00 UTC
-  workflow_dispatch:
+  workflow_dispatch:         # Permite dispararlo manualmente
 
 jobs:
   monitor:
@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0     # traer todo el historial para poder push
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -21,7 +23,6 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          # Instalamos todas las dependencias de una vez
           pip install -r requirements.txt python-dotenv
 
       - name: Ejecutar monitor
@@ -35,9 +36,6 @@ jobs:
         run: |
           git config user.name 'github-actions'
           git config user.email 'actions@github.com'
-          # forzamos el add de state.json aunque esté en .gitignore
-          git add -f state.json
-          git commit -m 'chore: actualizar state.json tras monitor' || echo "No hay cambios en state.json"
+          git add state.json
+          git commit -m 'chore: actualizar state.json tras monitor' || echo "No hay cambios"
           git push
-
-
