@@ -1,6 +1,6 @@
 name: Monitor Competidores
 
-# Necesario para que GITHUB_TOKEN pueda hacer git push
+# 1) Permitimos a GITHUB_TOKEN hacer push
 permissions:
   contents: write
 
@@ -13,16 +13,13 @@ jobs:
   monitor:
     runs-on: ubuntu-latest
 
-    # Aseguramos también a nivel de job
-    permissions:
-      contents: write
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          persist-credentials: true   # <- importante para dejar el GITHUB_TOKEN en .git/config
+          persist-credentials: true    # deja el token en .git/config
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -42,10 +39,10 @@ jobs:
         run: python monitor.py
 
       - name: Commit state.json updates
-        # GITHUB_TOKEN ya está disponible en el runner
         run: |
           git config user.name 'github-actions'
           git config user.email 'actions@github.com'
           git add state.json
           git commit -m 'chore: actualizar state.json tras monitor' || echo "No hay cambios"
-          git push
+          # 2) Hacemos push con token incrustado para evitar 403
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git main
