@@ -1,7 +1,7 @@
 name: Monitor Competidores
 
 permissions:
-  contents: write      # permite al GITHUB_TOKEN hacer push
+  contents: write
 
 on:
   schedule:
@@ -18,7 +18,6 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: true
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -37,14 +36,15 @@ jobs:
           TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
         run: python monitor.py
 
-      - name: Configurar remoto para push con token
-        run: |
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-
       - name: Commit state.json updates
         run: |
           git config user.name 'github-actions'
           git config user.email 'actions@github.com'
           git add state.json
-          git commit -m 'chore: actualizar state.json tras monitor' || echo "No hay cambios"
-          git push origin main
+          git commit -m 'chore: actualizar state.json tras monitor' || echo "No hay cambios en state.json"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
