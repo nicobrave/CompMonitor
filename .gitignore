@@ -2,9 +2,6 @@ cat <<EOF > .gitignore
 # Variables de entorno
 .env
 
-# Estado local
-state.json
-
 # Entornos virtuales
 .venv/
 
