@@ -1,0 +1,14 @@
+cat <<EOF > .gitignore
+# Variables de entorno
+.env
+
+# Estado local
+state.json
+
+# Entornos virtuales
+.venv/
+
+# Archivos de sistema
+__pycache__/
+*.py[cod]
+EOF
