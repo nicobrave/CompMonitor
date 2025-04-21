@@ -121,7 +121,7 @@ def generate_summary(raw_report: str) -> str:
     resp = openai.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{"role": "user", "content": prompt}],
-        temperature=0.3,
+        temperature=0.1,
     )
     return resp.choices[0].message.content.strip()
 
